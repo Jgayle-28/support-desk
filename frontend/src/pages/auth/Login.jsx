@@ -2,9 +2,9 @@ import { useState, useEffect } from "react"
 import { FaSignInAlt } from "react-icons/fa"
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import { login } from "../features/auth/authSlice"
+import { login } from "../../features/auth/authSlice"
 import { toast } from "react-toastify"
-import Spinner from "../components/shared/Spinner"
+import Spinner from "../../components/shared/Spinner"
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -18,12 +18,6 @@ const Login = () => {
   const { user, isLoading } = useSelector((state) => state.auth)
   const navigate = useNavigate()
 
-  useEffect(() => {
-    if (user) {
-      navigate("/")
-    }
-  }, [user])
-
   const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -36,6 +30,12 @@ const Login = () => {
 
     const userData = { email, password }
     dispatch(login(userData))
+      .unwrap()
+      .then((user) => {
+        toast.success(`Logged in as ${user.name}`)
+        navigate("/")
+      })
+      .catch(toast.error)
   }
   // Loading
   if (isLoading) return <Spinner />
